@@ -35,10 +35,27 @@ window.addEventListener("load", () => {
     color = random(20, 250);
     pulse = 1;
   }, "5n");
-  Tone.Transport.start();
-  loop.start(0);
-});
 
+  //Tone.Transport.start();
+  loop.start(0);
+  //following lines 38-52 are copied from: https://tonejs.github.io/docs/14.7.58/UserMedia
+  const meter = new Tone.Meter();
+  const mic = new Tone.UserMedia().connect(meter);
+  mic
+    .open()
+    .then(() => {
+      console.log("mic open");
+      setInterval(() => console.log(meter.getValue()), 100);
+    })
+    .catch((err) => {
+      console.log("mic not open");
+    });
+});
+window.addEventListener("click", () => {
+  Tone.start();
+  Tone.Transport.start();
+  mic.open();
+});
 const size = 10;
 const divider = 20;
 const numRows = 170;
@@ -47,7 +64,7 @@ const numCols = 170;
 let counter = 10;
 
 function draw() {
-  background(0);
+  background(255);
   noiseSeed(1);
 
   const startX = width / 2 - (numCols * size) / 2;
