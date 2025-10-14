@@ -1,16 +1,23 @@
 function setup() {
   createCanvas(innerWidth, innerHeight);
   frameRate(10);
+
+  size = 10;
+  numCols = ceil(width / size);
+  numRows = ceil(height / size);
 }
 
 let synth;
 let pulse = 0;
 let mic;
 let meter;
-const size = 10;
-const numRows = 170;
-const numCols = 170;
+//const size = 10;
+//const numRows = 170;
+//const numCols = 170;
 let counter = 10;
+
+const soundTypes = ["sine2", "fatsine", "fatsawtooth", "pulse", "fmsquare"];
+let currentSound = 0;
 
 //----LOAD ------------
 window.addEventListener("load", () => {
@@ -44,7 +51,7 @@ window.addEventListener("load", () => {
     pulse = 1;
   }, "5n");
 
-  //Following lines 49-50 are copied from: https://tonejs.github.io/docs/14.7.58/UserMedia
+  //Following lines 52-53 are copied from: https://tonejs.github.io/docs/14.7.58/UserMedia
   meter = new Tone.Meter();
   mic = new Tone.UserMedia().connect(meter);
 });
@@ -57,6 +64,12 @@ window.addEventListener("click", () => {
   console.log("Tone.js ready");
   mic.open();
   console.log("mic open");
+
+  // Changing sound on click
+  if (synth) {
+    currentSound = (currentSound + 1) % soundTypes.length;
+    synth.oscillator.type = soundTypes[currentSound];
+  }
 });
 
 // --------DRAWING---------------
@@ -65,6 +78,8 @@ function draw() {
   noiseSeed(1);
   noStroke();
   fill(0);
+  let level = meter.getValue();
+  let bwMode = level > -20;
   const startX = width / 2 - (numCols * size) / 2;
   const startY = height / 2 - (numRows * size) / 2;
   const pulseStrength = 1 + pulse * 0.6;
@@ -86,21 +101,38 @@ function draw() {
       console.log("4th", level);
     }
   }
-  //The following code was made with inspiration from the noise tutorial shown during one of the lectures.
+  // The following code was made with inspiration from the noise tutorial shown during one of the lectures.
   for (let y = 0; y < numRows; y++) {
     for (let x = 0; x < numCols; x++) {
       const value =
         noise(x / divider, y / divider, counter) * size * pulseStrength;
 
-      //Wave effect
+      // Wave effect
       const offsetX = noise(x / 15, y / 15, counter) * 20 - 10;
       const offsetY = noise(x / 15, y / 15, counter + 100) * 20 - 10;
 
-      fill(color, 0, map(value, 0, 1, 70, 270));
+      if (bwMode) {
+        fill(255);
+      } else {
+        fill(color, 0, map(value, 0, 1, 70, 270));
+      }
+
       square(startX + x * size + offsetX, startY + y * size + offsetY, value);
     }
   }
 
   counter += 0.05;
   pulse *= 0.6;
+
+  // Glitch effect on loud microphone sound
+  // Lines 131 & 136 were written with help from ChatGPT
+  if (bwMode) {
+    let numGlitches = int(random(5, 15));
+    for (let i = 0; i < numGlitches; i++) {
+      let glitchY = random(height);
+      let glitchH = random(10, 30);
+      let offsetX = random(-50, 50);
+      copy(0, glitchY, width, glitchH, offsetX, glitchY, width, glitchH);
+    }
+  }
 }
