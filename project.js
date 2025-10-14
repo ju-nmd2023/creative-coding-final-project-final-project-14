@@ -2,9 +2,17 @@ function setup() {
   createCanvas(innerWidth, innerHeight);
   frameRate(10);
 }
+
 let synth;
 let pulse = 0;
+let mic;
+let meter;
+const size = 10;
+const numRows = 170;
+const numCols = 170;
+let counter = 10;
 
+//----LOAD ------------
 window.addEventListener("load", () => {
   synth = new Tone.Synth({
     oscillator: { type: "sine" },
@@ -30,47 +38,54 @@ window.addEventListener("load", () => {
 
   loop = new Tone.Loop((time) => {
     const key = random(keys);
-    synth.triggerAttackRelease(key, time);
+    synth.triggerAttackRelease(key, "8n", time);
 
     color = random(20, 250);
     pulse = 1;
   }, "5n");
 
-  //Tone.Transport.start();
-  loop.start(0);
-  //following lines 38-52 are copied from: https://tonejs.github.io/docs/14.7.58/UserMedia
-  const meter = new Tone.Meter();
-  const mic = new Tone.UserMedia().connect(meter);
-  mic
-    .open()
-    .then(() => {
-      console.log("mic open");
-      setInterval(() => console.log(meter.getValue()), 100);
-    })
-    .catch((err) => {
-      console.log("mic not open");
-    });
+  //Following lines 49-50 are copied from: https://tonejs.github.io/docs/14.7.58/UserMedia
+  meter = new Tone.Meter();
+  mic = new Tone.UserMedia().connect(meter);
 });
+
+//---------CLICK---------------
 window.addEventListener("click", () => {
   Tone.start();
   Tone.Transport.start();
+  loop.start(0);
+  console.log("Tone.js ready");
   mic.open();
+  console.log("mic open");
 });
-const size = 10;
-const divider = 20;
-const numRows = 170;
-const numCols = 170;
 
-let counter = 10;
-
+// --------DRAWING---------------
 function draw() {
-  background(255);
+  background(0);
   noiseSeed(1);
-
+  noStroke();
+  fill(0);
   const startX = width / 2 - (numCols * size) / 2;
   const startY = height / 2 - (numRows * size) / 2;
   const pulseStrength = 1 + pulse * 0.6;
 
+  // Changing the divider according to microphone
+  if (meter) {
+    level = meter.getValue();
+    if (level > -30 && level <= -10) {
+      divider = 1;
+      console.log("1st", level);
+    } else if (level > -40 && level <= -30) {
+      divider = 10;
+      console.log("2nd", level);
+    } else if (level > -50 && level <= -40) {
+      divider = 100;
+      console.log("3rd", level);
+    } else {
+      divider = 50;
+      console.log("4th", level);
+    }
+  }
   //The following code was made with inspiration from the noise tutorial shown during one of the lectures.
   for (let y = 0; y < numRows; y++) {
     for (let x = 0; x < numCols; x++) {
