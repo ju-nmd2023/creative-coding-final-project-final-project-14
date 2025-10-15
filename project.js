@@ -2,10 +2,12 @@ function setup() {
   createCanvas(innerWidth, innerHeight);
   frameRate(10);
 
-  size = 10;
-  numCols = ceil(width / size);
-  numRows = ceil(height / size);
+  //size = 5;
+  // numCols = ceil(width / size);
+  //  numRows = ceil(height / size);
 }
+let numCols;
+let numRows;
 
 let synth;
 let pulse = 0;
@@ -14,7 +16,12 @@ let meter;
 //const size = 10;
 //const numRows = 170;
 //const numCols = 170;
-let counter = 10;
+let counter = 2;
+let currentColor;
+let targetColor;
+let transitionSpeed = 0.05;
+let interA;
+let interB;
 
 const soundTypes = ["sine2", "fatsine", "fatsawtooth", "pulse", "fmsquare"];
 let currentSound = 0;
@@ -23,7 +30,7 @@ let currentSound = 0;
 window.addEventListener("load", () => {
   synth = new Tone.Synth({
     oscillator: { type: "sine" },
-    envelope: { attack: 0.1, release: 0.2 },
+    envelope: { attack: 1, release: 2 },
   }).toDestination();
 
   const keys = [
@@ -46,8 +53,8 @@ window.addEventListener("load", () => {
   loop = new Tone.Loop((time) => {
     const key = random(keys);
     synth.triggerAttackRelease(key, "8n", time);
+    color = random(0, 100);
 
-    color = random(20, 250);
     pulse = 1;
   }, "5n");
 
@@ -69,6 +76,7 @@ window.addEventListener("click", () => {
   if (synth) {
     currentSound = (currentSound + 1) % soundTypes.length;
     synth.oscillator.type = soundTypes[currentSound];
+    console.log(currentSound);
   }
 });
 
@@ -86,21 +94,40 @@ function draw() {
 
   // Changing the divider according to microphone
   if (meter) {
-    level = meter.getValue();
+    // level = meter.getValue();
     if (level > -30 && level <= -10) {
       divider = 1;
       console.log("1st", level);
     } else if (level > -40 && level <= -30) {
-      divider = 10;
+      divider = 2;
       console.log("2nd", level);
     } else if (level > -50 && level <= -40) {
-      divider = 100;
+      divider = 4;
       console.log("3rd", level);
     } else {
-      divider = 50;
+      divider = 4;
       console.log("4th", level);
     }
   }
+  if (soundTypes) {
+    if (soundTypes[currentSound] === "sine2") {
+      size = 1;
+    } else if (soundTypes[currentSound] === "fatsine") {
+      size = 5;
+    } else if (soundTypes[currentSound] === "fatsawtooth") {
+      size = 10;
+    } else if (soundTypes[currentSound] === "pulse") {
+      size = 3;
+    } else if (soundTypes[currentSound] === "fmsquare") {
+      size = 8;
+    } else if (soundTypes[currentSound] === "sine") {
+      size = 2;
+    }
+  }
+
+  numCols = ceil((320 / size) * 2);
+  numRows = ceil((320 / size) * 2);
+
   // The following code was made with inspiration from the noise tutorial shown during one of the lectures.
   for (let y = 0; y < numRows; y++) {
     for (let x = 0; x < numCols; x++) {
@@ -114,7 +141,7 @@ function draw() {
       if (bwMode) {
         fill(255);
       } else {
-        fill(color, 0, map(value, 0, 1, 70, 270));
+        fill(color, 20, 90);
       }
 
       square(startX + x * size + offsetX, startY + y * size + offsetY, value);
