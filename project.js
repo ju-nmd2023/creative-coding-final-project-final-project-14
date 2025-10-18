@@ -214,6 +214,8 @@ function draw() {
   level = meter.getValue();
   soundChanges();
   sizeChanges();
+
   numCols = ceil((300 / size) * 2);
   numRows = ceil((300 / size) * 2);
+  noisefield();
 }
