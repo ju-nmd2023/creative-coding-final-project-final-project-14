@@ -57,7 +57,7 @@ window.addEventListener("load", () => {
     pulse = 1;
   }, "5n");
 
-  //Following lines 52-53 are copied from: https://tonejs.github.io/docs/14.7.58/UserMedia
+  //Following lines 60-63 are copied from: https://tonejs.github.io/docs/14.7.58/UserMedia
   meter = new Tone.Meter();
   mic = new Tone.UserMedia().connect(meter);
   let level = meter.getValue();
@@ -80,6 +80,7 @@ window.addEventListener("click", () => {
   }
 });
 //--------------SIZE------------
+//The line 86 was copied from ChatGPT
 function sizeChanges() {
   if (soundTypes) {
     if (soundTypes[currentSound] === "sine2") {
@@ -146,6 +147,8 @@ function noisefield() {
       } else {
         fill(c, 20, 90);
       }
+      // Lines 155-159 was modified with the help of ChatGPT for correct functionality.
+      //Shiffting effect
       if (newArt) {
         let pointX = startX + x * size + offsetX;
         let pointY = startY + y * size + offsetY;
@@ -186,6 +189,7 @@ function noisefield() {
         square(startX + x * size + offsetX, startY + y * size + offsetY, value);
       }
     }
+    // Lines 196 & 200 were written with help from ChatGPT
     if (bwMode) {
       let numGlitches = int(random(5, 15));
       for (let i = 0; i < numGlitches; i++) {
@@ -212,5 +216,4 @@ function draw() {
   sizeChanges();
   numCols = ceil((300 / size) * 2);
   numRows = ceil((300 / size) * 2);
-  noisefield();
 }
