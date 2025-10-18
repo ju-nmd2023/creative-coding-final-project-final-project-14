@@ -83,22 +83,22 @@ window.addEventListener("click", () => {
 function sizeChanges() {
   if (soundTypes) {
     if (soundTypes[currentSound] === "sine2") {
-      size = 15;
+      size = 5;
       newArt = false;
       nextArt = false;
       lastArt = true;
     } else if (soundTypes[currentSound] === "fatsawtooth") {
-      size = 5;
+      size = 15;
       newArt = false;
       nextArt = false;
       lastArt = false;
     } else if (soundTypes[currentSound] === "pulse") {
-      size = 8;
+      size = 10;
       newArt = true;
       nextArt = false;
       lastArt = false;
     } else if (soundTypes[currentSound] === "fmsquare") {
-      size = 10;
+      size = 8;
       newArt = false;
       nextArt = true;
       lastArt = false;
@@ -156,7 +156,7 @@ function noisefield() {
         let angle = noise(x, y, counter) * TWO_PI * 2;
         let shiftY = cos(angle) * shift * 0.02;
         let shiftX = sin(angle) * shift * 0.02;
-        fill(c, 80, 90);
+        fill(c, 40, 90);
         square(pointX + shiftX, pointY + shiftY, value);
       } else if (nextArt) {
         let pointX = startX + x * size + offsetX;
@@ -166,9 +166,9 @@ function noisefield() {
         const dinstance = dist(pointX, pointY, centerX, centerY);
         let shift = map(dinstance, 0, (numCols * size) / 2, shuffel, 0);
         let angle = noise(x, y, counter) * TWO_PI * 2;
-        let shiftY = cos(angle) * shift * 0.1;
-        let shiftX = sin(angle) * shift * 0.1;
-        fill(c, 100, 90);
+        let shiftY = cos(angle) * shift * 0.05;
+        let shiftX = sin(angle) * shift * 0.05;
+        fill(c, 65, 90);
         square(pointX + shiftX, pointY + shiftY, value);
       } else if (lastArt) {
         let pointX = startX + x * size + offsetX;
@@ -180,7 +180,7 @@ function noisefield() {
         let angle = noise(x, y, counter) * TWO_PI * 2;
         let shiftY = cos(angle) * shift * 0.1;
         let shiftX = sin(angle) * shift * 0.1;
-        fill(c, 120, 90);
+        fill(c, 80, 90);
         square(pointX + shiftX, pointY + shiftY, value);
       } else {
         square(startX + x * size + offsetX, startY + y * size + offsetY, value);
